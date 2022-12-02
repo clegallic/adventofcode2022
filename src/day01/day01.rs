@@ -26,7 +26,6 @@ impl Day for Day1 {
     }
 }
 
-// -> impl Iterator<Item=u32>
 fn sum_chunks<'x>(list: &'x Vec<String>) -> impl Iterator<Item=u32> + 'x {
     return list
         .split(|l| l.is_empty())
