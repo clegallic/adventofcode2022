@@ -34,6 +34,7 @@ pub enum ItemKind {
 }
 
 impl ItemKind {
+
     fn looses_vs(&self) -> ItemKind {
         match self {
             Rock => Paper,
