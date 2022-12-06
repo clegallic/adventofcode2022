@@ -69,23 +69,20 @@ fn parse_move(line: &String) -> Move {
     let captures = MOVE_RE.captures(line).unwrap();
     Move {
         amount: captures.name("amount").unwrap().as_str().parse::<usize>().unwrap(),
-        from: captures.name("from").unwrap().as_str().parse::<usize>().unwrap(),
-        to: captures.name("to").unwrap().as_str().parse::<usize>().unwrap(),
+        from: captures.name("from").unwrap().as_str().parse::<usize>().unwrap() - 1,
+        to: captures.name("to").unwrap().as_str().parse::<usize>().unwrap() - 1,
     }
 }
 
 fn move_crates_and_get_top(parsed: &mut ParsedInput, crate_mover_type: CrateMoverType) -> String {
     for m in &parsed.moves {
-        let from_stack = &mut parsed.stacks.clone()[m.from - 1];
-        let to_stack = &mut parsed.stacks.clone()[m.to - 1];
-        let crates_to_move = &mut from_stack.drain(0..m.amount).collect::<Vec<char>>();
+        let from_stack = parsed.stacks.get_mut(m.from).unwrap();
+        let mut crates_to_move = from_stack.drain(0..m.amount).collect::<Vec<char>>();
         match crate_mover_type {
             CM9000 => crates_to_move.reverse(),
             _ => ()
-        };
-        crates_to_move.append(to_stack);
-        parsed.stacks[m.from - 1] = from_stack.clone();
-        parsed.stacks[m.to - 1] = crates_to_move.clone();
+        }
+        crates_to_move.iter().for_each(|c| parsed.stacks[m.to].insert(0, *c));
     }
     parsed.stacks.iter().map(|s| s.first().unwrap().clone()).collect::<String>()
 }
